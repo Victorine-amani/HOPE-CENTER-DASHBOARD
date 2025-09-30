@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { toast } from 'sonner@2.0.3';
 import { 
   Plus, 
   Search, 
@@ -29,6 +30,7 @@ import {
 export function ContentManagement() {
   const [activeTab, setActiveTab] = useState('recipes');
   const [showAddRecipeDialog, setShowAddRecipeDialog] = useState(false);
+  const [showUploadContentDialog, setShowUploadContentDialog] = useState(false);
 
   const recipes = [
     {
@@ -188,10 +190,87 @@ export function ContentManagement() {
               </div>
             </DialogContent>
           </Dialog>
-          <Button>
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Content
-          </Button>
+          <Dialog open={showUploadContentDialog} onOpenChange={setShowUploadContentDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Content
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Upload Educational Content</DialogTitle>
+                <DialogDescription>Add articles, videos, or guides for patients</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="content-title">Content Title</Label>
+                    <Input id="content-title" placeholder="Enter title" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="content-type">Content Type</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="article">Article</SelectItem>
+                        <SelectItem value="video">Video</SelectItem>
+                        <SelectItem value="pdf">PDF Guide</SelectItem>
+                        <SelectItem value="audio">Audio</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="content-category">Category</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nutrition">Nutrition Education</SelectItem>
+                        <SelectItem value="mental-health">Mental Health</SelectItem>
+                        <SelectItem value="practical">Practical Skills</SelectItem>
+                        <SelectItem value="wellness">General Wellness</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="content-duration">Duration/Read Time</Label>
+                    <Input id="content-duration" placeholder="e.g., 10 min" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content-description">Description</Label>
+                  <Textarea id="content-description" placeholder="Brief description of the content" rows={3} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content-file">Upload File or URL</Label>
+                  <Input id="content-file" placeholder="Enter URL or select file" />
+                  <Button variant="outline" className="w-full">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Browse Files
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content-tags">Tags</Label>
+                  <Input id="content-tags" placeholder="Separate tags with commas" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setShowUploadContentDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowUploadContentDialog(false);
+                  toast.success('Content uploaded successfully');
+                }}>
+                  Upload Content
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

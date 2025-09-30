@@ -6,6 +6,12 @@ import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Progress } from './ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Textarea } from './ui/textarea';
+import { Checkbox } from './ui/checkbox';
+import { toast } from 'sonner@2.0.3';
 import { 
   Search, 
   Filter, 
@@ -23,6 +29,9 @@ import {
 
 export function PatientManagement() {
   const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
+  const [showAddPatientDialog, setShowAddPatientDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showFilterDialog, setShowFilterDialog] = useState(false);
 
   const patients = [
     {
@@ -113,10 +122,95 @@ export function PatientManagement() {
               <Mail className="w-4 h-4 mr-2" />
               Email
             </Button>
-            <Button size="sm">
-              <Edit className="w-4 h-4 mr-2" />
-              Edit Profile
-            </Button>
+            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Edit Patient Profile</DialogTitle>
+                  <DialogDescription>Update patient information and treatment details</DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-name">Full Name</Label>
+                    <Input id="edit-name" defaultValue={selectedPatientData?.name} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-age">Age</Label>
+                    <Input id="edit-age" type="number" defaultValue={selectedPatientData?.age} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-phone">Phone</Label>
+                    <Input id="edit-phone" defaultValue={selectedPatientData?.phone} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-email">Email</Label>
+                    <Input id="edit-email" type="email" defaultValue={selectedPatientData?.email} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-program">Program</Label>
+                    <Select defaultValue={selectedPatientData?.program.toLowerCase()}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="inpatient">Inpatient</SelectItem>
+                        <SelectItem value="outpatient">Outpatient</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-status">Status</Label>
+                    <Select defaultValue={selectedPatientData?.status.toLowerCase()}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="needs attention">Needs Attention</SelectItem>
+                        <SelectItem value="discharged">Discharged</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-doctor">Assigned Doctor</Label>
+                    <Select defaultValue="smith">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="smith">Dr. Smith</SelectItem>
+                        <SelectItem value="johnson">Dr. Johnson</SelectItem>
+                        <SelectItem value="wilson">Dr. Wilson</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-weight">Current Weight (kg)</Label>
+                    <Input id="edit-weight" defaultValue={selectedPatientData?.weight.replace(' kg', '')} />
+                  </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="edit-notes">Medical Notes</Label>
+                    <Textarea id="edit-notes" rows={3} placeholder="Add any updates or notes" />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => {
+                    setShowEditDialog(false);
+                    toast.success('Patient profile updated successfully');
+                  }}>
+                    Save Changes
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -348,10 +442,99 @@ export function PatientManagement() {
           <h1>Patient Management</h1>
           <p className="text-muted-foreground">Manage patient records, treatment plans, and progress tracking</p>
         </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Add New Patient
-        </Button>
+        <Dialog open={showAddPatientDialog} onOpenChange={setShowAddPatientDialog}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Patient
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Add New Patient</DialogTitle>
+              <DialogDescription>Register a new patient in the system</DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="first-name">First Name</Label>
+                <Input id="first-name" placeholder="Enter first name" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input id="last-name" placeholder="Enter last name" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dob">Date of Birth</Label>
+                <Input id="dob" type="date" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" type="tel" placeholder="(555) 123-4567" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" placeholder="patient@email.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="program">Program Type</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select program" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inpatient">Inpatient</SelectItem>
+                    <SelectItem value="outpatient">Outpatient</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="doctor">Assigned Doctor</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="smith">Dr. Smith</SelectItem>
+                    <SelectItem value="johnson">Dr. Johnson</SelectItem>
+                    <SelectItem value="wilson">Dr. Wilson</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Textarea id="address" placeholder="Enter full address" rows={2} />
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="medical-notes">Medical Notes</Label>
+                <Textarea id="medical-notes" placeholder="Any relevant medical history or notes" rows={3} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setShowAddPatientDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                setShowAddPatientDialog(false);
+                toast.success('Patient added successfully');
+              }}>
+                Add Patient
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="flex items-center gap-4">
@@ -359,10 +542,91 @@ export function PatientManagement() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search patients..." className="pl-9" />
         </div>
-        <Button variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Filter
-        </Button>
+        <Dialog open={showFilterDialog} onOpenChange={setShowFilterDialog}>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Filter Patients</DialogTitle>
+              <DialogDescription>Filter patient list by various criteria</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Program Type</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="inpatient" />
+                    <label htmlFor="inpatient" className="text-sm cursor-pointer">Inpatient</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="outpatient" />
+                    <label htmlFor="outpatient" className="text-sm cursor-pointer">Outpatient</label>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="active" />
+                    <label htmlFor="active" className="text-sm cursor-pointer">Active</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="needs-attention" />
+                    <label htmlFor="needs-attention" className="text-sm cursor-pointer">Needs Attention</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="discharged" />
+                    <label htmlFor="discharged" className="text-sm cursor-pointer">Discharged</label>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="doctor-filter">Doctor</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All doctors" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Doctors</SelectItem>
+                    <SelectItem value="smith">Dr. Smith</SelectItem>
+                    <SelectItem value="johnson">Dr. Johnson</SelectItem>
+                    <SelectItem value="wilson">Dr. Wilson</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="progress-filter">Progress Range</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All ranges" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Ranges</SelectItem>
+                    <SelectItem value="high">High (75-100%)</SelectItem>
+                    <SelectItem value="medium">Medium (50-74%)</SelectItem>
+                    <SelectItem value="low">Low (0-49%)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setShowFilterDialog(false)}>
+                Clear Filters
+              </Button>
+              <Button onClick={() => {
+                setShowFilterDialog(false);
+                toast.success('Filters applied');
+              }}>
+                Apply Filters
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>

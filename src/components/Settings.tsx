@@ -10,6 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Checkbox } from './ui/checkbox';
+import { toast } from 'sonner@2.0.3';
 import { 
   Plus, 
   Edit, 
@@ -221,9 +223,79 @@ export function Settings() {
                         <TableCell>{staff.lastLogin}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-3 h-3" />
-                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Edit Staff Member</DialogTitle>
+                                  <DialogDescription>Update staff member information and role</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`edit-name-${staff.id}`}>Full Name</Label>
+                                    <Input id={`edit-name-${staff.id}`} defaultValue={staff.name} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`edit-email-${staff.id}`}>Email Address</Label>
+                                    <Input id={`edit-email-${staff.id}`} type="email" defaultValue={staff.email} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`edit-role-${staff.id}`}>Role</Label>
+                                    <Select defaultValue={staff.role.toLowerCase().replace(' ', '-')}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="administrator">Administrator</SelectItem>
+                                        <SelectItem value="doctor">Doctor</SelectItem>
+                                        <SelectItem value="psychologist">Psychologist</SelectItem>
+                                        <SelectItem value="content-manager">Content Manager</SelectItem>
+                                        <SelectItem value="trainer">Trainer</SelectItem>
+                                        <SelectItem value="viewer">Viewer</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`edit-department-${staff.id}`}>Department</Label>
+                                    <Select defaultValue={staff.department.toLowerCase().replace(' ', '-')}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="administration">Administration</SelectItem>
+                                        <SelectItem value="nutrition">Nutrition</SelectItem>
+                                        <SelectItem value="mental-health">Mental Health</SelectItem>
+                                        <SelectItem value="fitness">Fitness</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`edit-status-${staff.id}`}>Status</Label>
+                                    <Select defaultValue={staff.status.toLowerCase()}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                                <div className="flex justify-end gap-2 mt-4">
+                                  <Button variant="outline" type="button">
+                                    Cancel
+                                  </Button>
+                                  <Button type="button" onClick={() => toast.success('Staff member updated successfully')}>
+                                    Save Changes
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                             <Button variant="outline" size="sm">
                               <Shield className="w-3 h-3" />
                             </Button>
@@ -258,10 +330,59 @@ export function Settings() {
                           ))}
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-3 h-3 mr-1" />
+                            Edit
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Role Permissions</DialogTitle>
+                            <DialogDescription>Modify permissions for {role}</DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="space-y-3">
+                              <Label>Select Permissions</Label>
+                              <div className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-patient-${role}`} />
+                                  <label htmlFor={`perm-patient-${role}`} className="text-sm cursor-pointer">Patient Management</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-content-${role}`} />
+                                  <label htmlFor={`perm-content-${role}`} className="text-sm cursor-pointer">Content Management</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-schedule-${role}`} />
+                                  <label htmlFor={`perm-schedule-${role}`} className="text-sm cursor-pointer">Scheduling</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-reports-${role}`} />
+                                  <label htmlFor={`perm-reports-${role}`} className="text-sm cursor-pointer">Reports</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-settings-${role}`} />
+                                  <label htmlFor={`perm-settings-${role}`} className="text-sm cursor-pointer">Settings</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id={`perm-full-${role}`} />
+                                  <label htmlFor={`perm-full-${role}`} className="text-sm cursor-pointer">Full Access</label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-2 mt-4">
+                            <Button variant="outline" type="button">
+                              Cancel
+                            </Button>
+                            <Button type="button" onClick={() => toast.success('Permissions updated successfully')}>
+                              Save Permissions
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   ))}
                 </div>

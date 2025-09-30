@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Label } from './ui/label';
+import { Checkbox } from './ui/checkbox';
+import { toast } from 'sonner@2.0.3';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -16,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export function Analytics() {
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const overallMetrics = [
     {
       title: 'Total Active Patients',
@@ -134,10 +140,98 @@ export function Analytics() {
             <Filter className="w-4 h-4 mr-2" />
             Filter
           </Button>
-          <Button>
-            <Download className="w-4 h-4 mr-2" />
-            Export Report
-          </Button>
+          <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Download className="w-4 h-4 mr-2" />
+                Export Report
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Export Analytics Report</DialogTitle>
+                <DialogDescription>Select report type and date range to export</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="report-type">Report Type</Label>
+                  <Select defaultValue="overview">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="overview">Overview Report</SelectItem>
+                      <SelectItem value="patient-progress">Patient Progress Report</SelectItem>
+                      <SelectItem value="engagement">Engagement Metrics</SelectItem>
+                      <SelectItem value="outcomes">Treatment Outcomes</SelectItem>
+                      <SelectItem value="complete">Complete Analytics Report</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date-range">Date Range</Label>
+                  <Select defaultValue="month">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="week">This Week</SelectItem>
+                      <SelectItem value="month">This Month</SelectItem>
+                      <SelectItem value="quarter">This Quarter</SelectItem>
+                      <SelectItem value="year">This Year</SelectItem>
+                      <SelectItem value="custom">Custom Range</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="format">Export Format</Label>
+                  <Select defaultValue="pdf">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdf">PDF Document</SelectItem>
+                      <SelectItem value="excel">Excel Spreadsheet</SelectItem>
+                      <SelectItem value="csv">CSV File</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Include Sections</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="include-metrics" defaultChecked />
+                      <label htmlFor="include-metrics" className="text-sm cursor-pointer">Key Metrics</label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="include-charts" defaultChecked />
+                      <label htmlFor="include-charts" className="text-sm cursor-pointer">Charts & Graphs</label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="include-patient-list" />
+                      <label htmlFor="include-patient-list" className="text-sm cursor-pointer">Patient List</label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="include-recommendations" defaultChecked />
+                      <label htmlFor="include-recommendations" className="text-sm cursor-pointer">Recommendations</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setShowExportDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowExportDialog(false);
+                  toast.success('Report exported successfully');
+                }}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Report
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
